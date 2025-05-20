@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Image Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="./icons8-logo-48.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <button class="sidebar-close" id="sidebar-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="app-title">
+                <i class="fas fa-paint-brush"></i>
+                <h1>AI Image Creator</h1>
+            </div>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="prompt">Your Vision</label>
+                    <textarea id="prompt" placeholder="Describe what you want to create..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="model">AI Model</label>
+                    <div class="select-wrapper">
+                        <select id="model">
+                            <option value="stabilityai/sdxl-turbo:free">SDXL Turbo</option>
+                            <option value="black-forest-labs/FLUX-1-schnell:free">FLUX-1 Schnell</option>
+                            <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="advanced-options">
+                    <div class="toggle-button" id="advanced-toggle">
+                        <i class="fas fa-sliders-h"></i> Advanced Options
+                    </div>
+                    <div class="advanced-panel hidden" id="advanced-panel">
+                        <div class="form-group">
+                            <label for="quality">Image Quality</label>
+                            <div class="select-wrapper">
+                                <select id="quality">
+                                    <option value="auto">Auto (Recommended)</option>
+                                    <option value="low">Low (Faster)</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High (Best Quality)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="num-images">Number of Images</label>
+                            <div class="image-count-selector">
+                                <label class="radio-container">
+                                    <input type="radio" name="image-count" value="1" checked>
+                                    <span class="radio-label">1</span>
+                                </label>
+                                <label class="radio-container">
+                                    <input type="radio" name="image-count" value="2">
+                                    <span class="radio-label">2</span>
+                                </label>
+                                <label class="radio-container">
+                                    <input type="radio" name="image-count" value="4">
+                                    <span class="radio-label">4</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="negative-prompt">Negative Prompt <span class="tooltip"
+                                    title="Things you want to exclude from the image">ⓘ</span></label>
+                            <textarea id="negative-prompt" placeholder="Elements to avoid in the image..."></textarea>
+                        </div>
+
+                        <!-- Add new Image Edit section -->
+                        <div class="form-group">
+                            <label class="edit-mode-label" for="edit-mode-toggle">Edit Mode <span class="tooltip"
+                                    title="Upload images to edit instead of generating from scratch">ⓘ</span></label>
+                            <div class="toggle-switch" id="toggle-switch-container">
+                                <input type="checkbox" id="edit-mode-toggle">
+                                <span class="toggle-slider" id="toggle-slider"></span>
+                            </div>
+                        </div>
+
+                        <div id="image-edit-options" class="hidden">
+                            <div class="form-group">
+                                <label for="image-upload">Upload Images (up to 16)</label>
+                                <div class="upload-area" id="upload-area">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Drag & drop images or click to browse</p>
+                                    <!-- Moved file input outside to prevent double dialog -->
+                                </div>
+                                <!-- File input moved here -->
+                                <input type="file" id="image-upload" multiple accept="image/*" style="display: none;">
+                            </div>
+                            <div class="form-group">
+                                <label for="mask-upload">Upload Mask (Optional) <span class="tooltip"
+                                        title="A mask specifies areas to edit">ⓘ</span></label>
+                                <div class="upload-area upload-area-small" id="mask-upload-area">
+                                    <i class="fas fa-mask"></i>
+                                    <p>Drag & drop mask or click to browse</p>
+                                    <!-- Moved file input outside to prevent double dialog -->
+                                </div>
+                                <!-- File input moved here -->
+                                <input type="file" id="mask-upload" accept="image/*" style="display: none;">
+                            </div>
+                            <div id="uploaded-images-preview" class="uploaded-images-container hidden">
+                                <p>Uploaded Images:</p>
+                                <div class="image-thumbnails" id="image-thumbnails"></div>
+                                <button type="button" id="clear-uploads" class="secondary-btn"><i
+                                        class="fas fa-trash"></i> Clear All</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="favorites-panel">
+                    <div class="toggle-button" id="favorites-toggle">
+                        <i class="fas fa-heart"></i> My Favorites
+                    </div>
+                    <div class="favorites-list hidden" id="favorites-list">
+                        <p class="no-favorites">No favorite images yet</p>
+                        <div id="favorites-items"></div>
+                    </div>
+                </div>
+                <div class="history-panel">
+                    <div class="toggle-button" id="history-toggle">
+                        <i class="fas fa-history"></i> Generation History
+                    </div>
+                    <div class="history-list hidden" id="history-list">
+                        <p class="no-history">No previous generations</p>
+                        <div id="history-items"></div>
+                    </div>
+                </div>
+                <button id="generate-btn"><i class="fas fa-magic"></i> Generate Image</button>
+            </div>
+        </div>
+        <div class="content">
+            <div class="toolbar">
+                <button class="sidebar-toggle" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="theme-toggle" id="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </div>
+            </div>
+            <div class="result-container">
+                <div id="welcome-message">
+                    <i class="fas fa-image fa-4x"></i>
+                    <h2>Create amazing images with AI</h2>
+                    <p>Enter your prompt in the sidebar and click Generate</p>
+                </div>
+                <div id="loading" class="hidden">
+                    <div class="spinner-container">
+                        <div class="spinner"></div>
+                    </div>
+                    <p>Creating your masterpiece...</p>
+                </div>
+                <div id="error-message" class="hidden"></div>
+                <div id="image-container" class="hidden">
+                    <div class="image-header">
+                        <h2>Your Creation</h2>
+                        <div class="image-actions">
+                            <button id="download-btn" class="action-btn" title="Download Image">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button id="share-btn" class="action-btn" title="Copy Image Link">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                            <button id="favorite-btn" class="action-btn" title="Add to Favorites">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="multi-image-grid" class="hidden">
+                        <!-- Multiple images will be inserted here dynamically -->
+                    </div>
+                    <div class="image-wrapper" id="single-image-wrapper">
+                        <img id="generated-image" src="" alt="Generated image">
+                        <button id="back-to-grid-btn" class="image-overlay-btn hidden" title="Back to Grid">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="image-info">
+                        <div class="prompt-display">
+                            <h3>Prompt</h3>
+                            <p id="used-prompt"></p>
+                        </div>
+                        <div class="model-info">
+                            <span id="used-model"></span>
+                            <span id="generation-time"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <div class="mobile-nav">
+        <div class="mobile-nav-inner">
+            <div class="mobile-nav-btn" id="nav-create">
+                <i class="fas fa-magic"></i>
+                <span>Create</span>
+            </div>
+            <div class="mobile-nav-btn" id="nav-history">
+                <i class="fas fa-history"></i>
+                <span>History</span>
+            </div>
+            <div class="mobile-nav-btn" id="nav-favorites">
+                <i class="fas fa-heart"></i>
+                <span>Favorites</span>
+            </div>
+            <div class="mobile-nav-btn" id="nav-settings">
+                <i class="fas fa-sliders-h"></i>
+                <span>Settings</span>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
