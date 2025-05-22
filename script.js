@@ -1,16 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // API Keys for ImageRouter with rotation capability
     const API_KEYS = [
-        '2be0ee04c65fb7399b5d0403a9ed9961f8bd37a5bc2b7fd7bc018e535604d640',
-        '3951ab091fcb566f383a58bc6a0d38604f83174afd4eac7c01787ed7032d5513',
-        '6d8aed9b44f19355eeeb3af8e5f272e9cf794be8bd5ad66188ab7725655d0aab',
-        '25d1b2907d15f9c032fd9a73931c2c98729e9a1e9b132d709a848a7f42fedfe4',
-        '408e2674f9b0a7fedd4c81a82dfe80efbb6947fc6e0c88fc609156aa3a42aa4e',
-        '378a85da883a8be9cb37f9a3453c139d50d31e0ff8bbc5af57d1cf92303f739d',
-        '9492f2a8c50f1f4eb528c3bf3a15a344736d2b778332d4c55eb0afdfebe469fb',
-        '2bb2e63dea295f195f08917d3f0e48921e67e76a44d3e05e06b56fa397e8b98d',
-        '3d076cb7e29dedca0bc08592470f09b5b29a792de196a5af9ff1bf3bcf8e3eea',
-        'c24cc71a5e1994e8332cda156f521d50bd3d96e91e2c606c4e1a308e1ceb4031'
+        "Paste_Your_keys: https://ir.myqa.cc/api-keys"
     ];
     
     // Current API key index and failed key tracking
